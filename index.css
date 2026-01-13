@@ -1,0 +1,363 @@
+/* Page Settings */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: white;
+    background-color: #181818;
+    min-height: 100vh;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Section */
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 20px 5px 20px;
+    border-radius: 10px;
+}
+
+header p {
+    font-size: 24px;
+}
+
+.right {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+.socials {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.socials p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid red;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: 0.5s;
+    padding-top: 4px;
+}
+
+.socials a {
+    color: white;
+}
+
+.socials a:visited {
+    color: white;
+}
+
+.socials p:hover {
+    background-color: green;
+    color: white;
+    box-shadow: 0 0 15px green;
+    border: 2px solid green;
+}
+
+.hamburger {
+    font-size: 24px;
+    padding-top: 7.5px;
+    cursor: pointer;
+}
+
+header.italian-border {
+  position: relative;
+  background: #181818;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 0;
+}
+
+header.italian-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px; /* border thickness */
+  background: linear-gradient(
+    90deg,
+    #008C45,
+    #FFFFFF,
+    #CD212A
+  );
+  background-size: 300% 300%;
+  animation: italianFlow 10s ease infinite;
+  border-radius: 12px;
+  z-index: -1;
+}
+
+/* Inner rounding */
+header.italian-border {
+  border-radius: 10px;
+}
+
+@keyframes italianFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  header.italian-border::before {
+    animation: none;
+  }
+}
+
+
+/* Sidebar Section */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    background-color: #212121;
+    transition: width 0.7s ease;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.sidebar.active {
+    width: 320px;
+}
+
+body.sidebar-open {
+    overflow: hidden;
+}
+
+.sidebar-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+    font-weight: bold;
+    background: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    border: none;
+    margin: 2px 0px 2px 0px;
+}
+
+.sidebar-btn:hover {
+    background-color: red;
+}
+
+.sidebar-btn a {
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar-btn a:visited {
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    font-weight: bold;
+}
+
+.sidebar-content h2 {
+    margin: 40px 10px 10px 10px;
+    text-align: center;
+}
+
+.sidebar-divider-top {
+    border: 1px solid white;
+    margin: 15px 0px 15px 0px;
+}
+
+.sidebar-divider-bottom {
+    border: 1px solid white;
+    margin: 15px 0px 15px 0px;
+}
+
+.sidebar-socials {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.sidebar-btn-social-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-right: 40px;
+    font-size: 24px;
+    gap: 20px;
+}
+
+.sidebar-btn-social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid red;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.5s;
+    color: white;
+}
+
+.sidebar-btn-social-links a:visited {
+    color: white;
+}
+
+.sidebar-btn-social-links a:hover {
+    background-color: green;
+    color: white;
+    box-shadow: 0 0 15px green;
+    border: 1px solid green;
+}
+
+/* Introduction Section */
+.introduction {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin: 30px 0px 30px 0px;
+}
+
+.introduction h1 {
+    font-size: 24px;
+}
+
+.introduction p {
+    margin: 0px 180px 20px 180px;
+}
+
+/* Content Section */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.actual-content {
+    display: grid;
+    grid-template-rows: 5, 1fr;
+}
+
+.actual-buttons > a {
+    background-color: transparent;
+    border: none;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+/* Footer Section */
+footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 20px 5px 20px;
+    border-radius: 10px;
+}
+
+footer p {
+    font-size: 24px;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0px;
+}
+
+.footer-socials {
+    display: flex;
+    flex-direction: column;
+}
+
+.linkedin, .email {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+.footer-socials p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid red;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: 0.5s;
+    padding-top: 4px;
+}
+
+.footer-socials h3 {
+    text-align: right;
+    width: 200px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.footer-socials a {
+    color: white;
+}
+
+.footer-socials a:visited {
+    color: white;
+}
+
+.footer-socials p:hover {
+    background-color: green;
+    color: white;
+    box-shadow: 0 0 15px green;
+    border: 2px solid green;
+}
