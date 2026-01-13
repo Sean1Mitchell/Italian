@@ -302,6 +302,10 @@ body.sidebar-open {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.space {
+    margin-top: 40px;
+}
+
 .actual-buttons > a {
     display: flex;
     justify-content: center;
@@ -346,5 +350,9 @@ body.sidebar-open {
 
     .sidebar-content {
         width: 200px;
+    }
+
+    .actual-buttons {
+        margin: 0px 20px 0px 20px;
     }
 }
