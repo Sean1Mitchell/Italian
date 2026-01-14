@@ -32,35 +32,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
-       NOTIFICATION APPROVAL
-    ========================== */
+        PUSH NOTIFICATIONS 
+    ========================= */
 
     const notifyBtn = document.getElementById("notifyBtn");
 
-    if (notifyBtn && "Notification" in window) {
+    if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
 
-      // Hide button if already granted
-      if (Notification.permission === "granted") {
-        notifyBtn.textContent = "🔔 Notifications enabled";
-        notifyBtn.disabled = true;
-      }
+      // Update button state on load
+      const updateButtonState = () => {
+        if (Notification.permission === "granted") {
+          notifyBtn.textContent = "🔔 Notifications enabled";
+          notifyBtn.disabled = true;
+        }
+
+        if (Notification.permission === "denied") {
+          notifyBtn.textContent = "🔕 Notifications blocked";
+          notifyBtn.disabled = true;
+        }
+      };
+
+      updateButtonState();
 
       notifyBtn.addEventListener("click", async () => {
+        try {
+          // 1. Request permission
+          const permission = await Notification.requestPermission();
 
-        const permission = await Notification.requestPermission();
+          if (permission !== "granted") {
+            console.log("Notifications not granted");
+            updateButtonState();
+            return;
+          }
 
-        if (permission === "granted") {
+          // 2. Get active service worker
+          const registration = await navigator.serviceWorker.ready;
+
+          // 3. Subscribe user (VAPID key comes later)
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: "<YOUR_PUBLIC_VAPID_KEY_HERE>"
+          });
+
+          // 4. Send subscription to backend (Cloudflare Worker)
+          await fetch("/api/subscribe", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(subscription)
+          });
+
+          // 5. Update UI
           notifyBtn.textContent = "🔔 Notifications enabled";
           notifyBtn.disabled = true;
 
-          console.log("Permission granted");
-        } else {
-          console.log("Permission denied");
-        }
+          console.log("Push subscription successful");
 
+        } catch (err) {
+          console.error("Push setup failed:", err);
+        }
       });
     }
-
 
     /* =========================
        INDEX PAGE COVER
