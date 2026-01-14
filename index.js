@@ -36,10 +36,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const startBtn = document.getElementById("startBtn");
     const cover = document.getElementById("cover");
-    const container = document.getElementById("homeContent");
+    const homeContent = document.getElementById("homeContent");
 
-    if (startBtn && cover && container) {
+    if (cover && homeContent && sessionStorage.getItem("entered")) {
+        cover.classList.add("hide");
+        homeContent.classList.add("show");
+    }
+
+    if (startBtn && cover && homeContent) {
         startBtn.addEventListener("click", () => {
+            sessionStorage.setItem("entered", "true");
             cover.classList.add("hide");
             homeContent.classList.add("show");
         });
@@ -94,5 +100,18 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
+
+    /* =========================
+       SERVICE WORKER JS
+    ========================== */
+
+
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("SW failed", err));
+    }
+
 
 });

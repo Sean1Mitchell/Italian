@@ -118,5 +118,10 @@
     <script src="index.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>AOS.init();</script>
+    <script>
+  if (sessionStorage.getItem("entered")) {
+    document.documentElement.classList.add("skip-cover");
+  }
+</script>
 </body>
 </html>

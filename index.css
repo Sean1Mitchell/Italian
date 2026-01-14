@@ -73,6 +73,15 @@ p {font-size: 18px;}
     opacity: 1;
 }
 
+.skip-cover .cover {
+    display: none;
+}
+
+.skip-cover #homeContent {
+    opacity: 1;
+}
+
+
 
 .container {
     min-height: 100vh;
