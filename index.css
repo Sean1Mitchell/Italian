@@ -23,6 +23,57 @@ h2 {font-size: 28px;}
 h3 {font-size: 22px;}
 p {font-size: 18px;}
 
+/* Cover styles */
+.cover {
+    position: fixed;
+    inset: 0;
+    background-color: #181818;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    z-index: 1000;
+
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.cover > button {
+    border: 2px solid red;
+    box-shadow: 0 0 15px red;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    background-color: transparent;
+    height: 40px;
+    width: 130px;
+}
+
+.cover > button:hover {
+    border: 2px solid green;
+    box-shadow: 0 0 15px green;
+    transition: 0.5s ease-in-out;
+}
+
+.cover.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+#homeContent {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+#homeContent.show {
+    opacity: 1;
+}
+
+
 .container {
     min-height: 100vh;
     display: flex;
@@ -261,10 +312,6 @@ body.sidebar-open {
     margin: 30px 0px 30px 0px;
 }
 
-.introduction h1 {
-    font-size: 24px;
-}
-
 .introduction p {
     margin: 0px 180px 20px 180px;
 }
@@ -318,6 +365,76 @@ body.sidebar-open {
     font-size: 22px;
 }
 
+
+/* CONTENT FOR TOPICS */
+.topic-topic {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.topic-content {
+    border: 1px solid white;
+    border-radius: 12px;
+    margin: 0px 20px 30px 20px;
+    padding: 0px 10px 0px 10px;
+}
+
+
+/* TABLE OF CONTENTS */
+.table-of-contents {
+    margin-bottom: 50px;
+}
+
+.table-of-contents-btn {
+    height: 40px;
+    background-color: #333;
+    color: white;
+    border: 2px solid red;
+    box-shadow: 0 0 15px red;
+    border-radius: 8px;
+    width: 200px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.table-of-contents-btn:hover {
+    border: 2px solid green;
+    box-shadow: 0 0 15px green;
+    transition: 0.5s ease-in-out;
+}
+
+.table-of-contents-content {
+    display: none;
+    padding: 10px;
+    background: #333;
+    border-radius: 8px;
+    border: 2px solid black;
+    width: fit-content;
+    margin: 10px auto;
+}
+
+.toc-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 1px solid black;
+}
+
+.toc-btn:hover {
+    color: red;
+}
+
+.toc-btn:visited {
+    color: white;
+}
+
+
 @media (max-width: 380px) {
 
     /* TYPEOGRAPHY */
@@ -355,4 +472,20 @@ body.sidebar-open {
     .actual-buttons {
         margin: 0px 20px 0px 20px;
     }
+
+    .topic-topic {
+        display: flex;
+        flex-direction: column;
+        margin: 0px 20px 0px 20px;
+    }
+
+    .topic-content {
+        margin: 10px 3px 10px 3px;
+        padding: 0px 10px 0px 10px;
+    }
+
+    .topic-content p {
+        text-align: left;
+    }
+
 }
