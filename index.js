@@ -30,6 +30,38 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+    /* =========================
+       NOTIFICATION APPROVAL
+    ========================== */
+
+    const notifyBtn = document.getElementById("notifyBtn");
+
+    if (notifyBtn && "Notification" in window) {
+
+      // Hide button if already granted
+      if (Notification.permission === "granted") {
+        notifyBtn.textContent = "🔔 Notifications enabled";
+        notifyBtn.disabled = true;
+      }
+
+      notifyBtn.addEventListener("click", async () => {
+
+        const permission = await Notification.requestPermission();
+
+        if (permission === "granted") {
+          notifyBtn.textContent = "🔔 Notifications enabled";
+          notifyBtn.disabled = true;
+
+          console.log("Permission granted");
+        } else {
+          console.log("Permission denied");
+        }
+
+      });
+    }
+
+
     /* =========================
        INDEX PAGE COVER
     ========================== */

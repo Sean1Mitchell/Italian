@@ -107,6 +107,23 @@ header {
     gap: 40px;
 }
 
+.notify-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.6rem;
+  background: transparent;
+  border: 2px solid green;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notify-btn:hover {
+  box-shadow: 0 0 12px green;
+}
+
+
 .socials {
     display: flex;
     flex-direction: row;
