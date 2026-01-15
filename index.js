@@ -66,11 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 2️⃣ Get active service worker
                 const registration = await navigator.serviceWorker.ready;
 
-                // 3️⃣ Create push subscription
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: "BFrZ2jrXMzpIibP3a225IRvQdjnn25_oDNQcIlhb6SAKMRmf6OdqsMuon6kdbKgA235Jzs-mRNO3hKuXqv1pgbQ"
-                });
+                // 3️⃣ Get existing subscription OR create a new one
+                let subscription = await registration.pushManager.getSubscription();
+
+                if (!subscription) {
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey:
+                            "BFrZ2jrXMzpIibP3a225IRvQdjnn25_oDNQcIlhb6SAKMRmf6OdqsMuon6kdbKgA235Jzs-mRNO3hKuXqv1pgbQ"
+                    });
+                }
 
                 // 4️⃣ Send subscription to Cloudflare Worker
                 await fetch(
@@ -93,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
 
 
     /* =========================
