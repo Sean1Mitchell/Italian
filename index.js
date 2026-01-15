@@ -35,69 +35,92 @@ document.addEventListener("DOMContentLoaded", () => {
         PUSH NOTIFICATIONS 
     ========================= */
 
-    const notifyBtn = document.getElementById("notifyBtn");
+const notifyBtn = document.getElementById("notifyBtn");
 
-    if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
+// 🔑 Your PUBLIC VAPID key (base64url, no padding)
+const VAPID_PUBLIC_KEY =
+  "BKU68fW6FWchauFoH4H_chsBFw8Du_tiMXbsF5mQmT_hvJ3DFX6cfAVFvBiorqfCVxu-A4E0mkAc19BZ6P0Lbrk";
 
-        const updateButtonState = () => {
-            if (Notification.permission === "granted") {
-                notifyBtn.textContent = "🔔 Notifications enabled";
-                notifyBtn.disabled = true;
-            }
+/**
+ * Convert base64url string to Uint8Array (REQUIRED by Push API)
+ */
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
 
-            if (Notification.permission === "denied") {
-                notifyBtn.textContent = "🔕 Notifications blocked";
-                notifyBtn.disabled = true;
-            }
-        };
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
-        updateButtonState();
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
 
-        notifyBtn.addEventListener("click", async () => {
-            try {
-                // 1️⃣ Request permission
-                const permission = await Notification.requestPermission();
+  return outputArray;
+}
 
-                if (permission !== "granted") {
-                    updateButtonState();
-                    return;
-                }
+if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
 
-                // 2️⃣ Get active service worker
-                const registration = await navigator.serviceWorker.ready;
-
-                // 3️⃣ Get existing subscription OR create a new one
-                let subscription = await registration.pushManager.getSubscription();
-
-                if (!subscription) {
-                    subscription = await registration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey:
-                            "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEw+hm2Swb4X2zX+TLyUyDksuhkhV6a+Gt9W2n7osUN/gwBXxSHL1V3WoPfc6dx1OdK2UxYfLf04p35z1oMNIMJQ=="
-                    });
-                }
-
-                // 4️⃣ Send subscription to Cloudflare Worker
-                await fetch(
-                    "https://push-worker.seanmitchell09022000.workers.dev/subscribe",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(subscription)
-                    }
-                );
-
-                // 5️⃣ Update UI
-                notifyBtn.textContent = "🔔 Notifications enabled";
-                notifyBtn.disabled = true;
-
-                console.log("Push subscription saved");
-
-            } catch (err) {
-                console.error("Push setup failed:", err);
-            }
-        });
+  const updateButtonState = () => {
+    if (Notification.permission === "granted") {
+      notifyBtn.textContent = "🔔 Notifications enabled";
+      notifyBtn.disabled = true;
     }
+
+    if (Notification.permission === "denied") {
+      notifyBtn.textContent = "🔕 Notifications blocked";
+      notifyBtn.disabled = true;
+    }
+  };
+
+  updateButtonState();
+
+  notifyBtn.addEventListener("click", async () => {
+    try {
+      // 1️⃣ Request permission
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        updateButtonState();
+        return;
+      }
+
+      // 2️⃣ Get service worker
+      const registration = await navigator.serviceWorker.ready;
+
+      // 3️⃣ Get existing subscription OR create a new one
+      let subscription = await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        });
+      }
+
+      // 4️⃣ Send subscription to Cloudflare Worker
+      await fetch(
+        "https://push-worker.seanmitchell09022000.workers.dev/subscribe",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(subscription)
+        }
+      );
+
+      // 5️⃣ Update UI
+      notifyBtn.textContent = "🔔 Notifications enabled";
+      notifyBtn.disabled = true;
+
+      console.log("✅ Push subscription saved");
+
+    } catch (err) {
+      console.error("❌ Push setup failed:", err);
+    }
+  });
+}
+
 
 
 
