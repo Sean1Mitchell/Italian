@@ -39,60 +39,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
 
-      // Update button state on load
-      const updateButtonState = () => {
-        if (Notification.permission === "granted") {
-          notifyBtn.textContent = "🔔 Notifications enabled";
-          notifyBtn.disabled = true;
-        }
+        // Update button state on load
+        const updateButtonState = () => {
+            if (Notification.permission === "granted") {
+                notifyBtn.textContent = "🔔 Notifications enabled";
+                notifyBtn.disabled = true;
+            }
 
-        if (Notification.permission === "denied") {
-          notifyBtn.textContent = "🔕 Notifications blocked";
-          notifyBtn.disabled = true;
-        }
-      };
+            if (Notification.permission === "denied") {
+                notifyBtn.textContent = "🔕 Notifications blocked";
+                notifyBtn.disabled = true;
+            }
+        };
 
-      updateButtonState();
+        updateButtonState();
 
-      notifyBtn.addEventListener("click", async () => {
-        try {
-          // 1. Request permission
-          const permission = await Notification.requestPermission();
+        notifyBtn.addEventListener("click", async () => {
+            try {
+                // 1. Request permission
+                const permission = await Notification.requestPermission();
 
-          if (permission !== "granted") {
-            console.log("Notifications not granted");
-            updateButtonState();
-            return;
-          }
+                if (permission !== "granted") {
+                    console.log("Notifications not granted");
+                    updateButtonState();
+                    return;
+                }
 
-          // 2. Get active service worker
-          const registration = await navigator.serviceWorker.ready;
+                // 2. Get active service worker
+                const registration = await navigator.serviceWorker.ready;
 
-          // 3. Subscribe user (VAPID key comes later)
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: "<YOUR_PUBLIC_VAPID_KEY_HERE>"
-          });
+                // 3. Subscribe user (VAPID key comes later)
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: "BFrZ2jrXMzpIibP3a225IRvQdjnn25_oDNQcIlhb6SAKMRmf6OdqsMuon6kdbKgA235Jzs-mRNO3hKuXqv1pgbQ"
+                });
 
-          // 4. Send subscription to backend (Cloudflare Worker)
-          await fetch("/api/subscribe", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(subscription)
-          });
+                // 4. Send subscription to backend (Cloudflare Worker)
+                await fetch("https://push-worker.seanmitchell09022000.workers.dev/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(subscription)
+                });
 
-          // 5. Update UI
-          notifyBtn.textContent = "🔔 Notifications enabled";
-          notifyBtn.disabled = true;
 
-          console.log("Push subscription successful");
+                // 5. Update UI
+                notifyBtn.textContent = "🔔 Notifications enabled";
+                notifyBtn.disabled = true;
 
-        } catch (err) {
-          console.error("Push setup failed:", err);
-        }
-      });
+                console.log("Push subscription successful");
+
+            } catch (err) {
+                console.error("Push setup failed:", err);
+            }
+        });
     }
 
     /* =========================
@@ -174,8 +173,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js")
-        .then(() => console.log("Service Worker registered"))
-        .catch(err => console.error("SW failed", err));
+            .then(() => console.log("Service Worker registered"))
+            .catch(err => console.error("SW failed", err));
     }
 
 
