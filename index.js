@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
 
-        // Update button state on load
         const updateButtonState = () => {
             if (Notification.permission === "granted") {
                 notifyBtn.textContent = "🔔 Notifications enabled";
@@ -56,43 +55,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
         notifyBtn.addEventListener("click", async () => {
             try {
-                // 1. Request permission
+                // 1️⃣ Request permission
                 const permission = await Notification.requestPermission();
 
                 if (permission !== "granted") {
-                    console.log("Notifications not granted");
                     updateButtonState();
                     return;
                 }
 
-                // 2. Get active service worker
+                // 2️⃣ Get active service worker
                 const registration = await navigator.serviceWorker.ready;
 
-                // 3. Subscribe user (VAPID key comes later)
+                // 3️⃣ Create push subscription
                 const subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: "BFrZ2jrXMzpIibP3a225IRvQdjnn25_oDNQcIlhb6SAKMRmf6OdqsMuon6kdbKgA235Jzs-mRNO3hKuXqv1pgbQ"
                 });
 
-                // 4. Send subscription to backend (Cloudflare Worker)
-                await fetch("https://push-worker.seanmitchell09022000.workers.dev/subscribe", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(subscription)
-                });
+                // 4️⃣ Send subscription to Cloudflare Worker
+                await fetch(
+                    "https://push-worker.seanmitchell09022000.workers.dev/subscribe",
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(subscription)
+                    }
+                );
 
-
-                // 5. Update UI
+                // 5️⃣ Update UI
                 notifyBtn.textContent = "🔔 Notifications enabled";
                 notifyBtn.disabled = true;
 
-                console.log("Push subscription successful");
+                console.log("Push subscription saved");
 
             } catch (err) {
                 console.error("Push setup failed:", err);
             }
         });
     }
+
 
     /* =========================
        INDEX PAGE COVER
