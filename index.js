@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey:
-                            "BFrZ2jrXMzpIibP3a225IRvQdjnn25_oDNQcIlhb6SAKMRmf6OdqsMuon6kdbKgA235Jzs-mRNO3hKuXqv1pgbQ"
+                            "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEw+hm2Swb4X2zX+TLyUyDksuhkhV6a+Gt9W2n7osUN/gwBXxSHL1V3WoPfc6dx1OdK2UxYfLf04p35z1oMNIMJQ=="
                     });
                 }
 
