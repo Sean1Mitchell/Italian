@@ -34,26 +34,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const cover = document.getElementById("cover");
     const homeContent = document.getElementById("homeContent");
 
-    console.log("StartBtn:", startBtn);
-    console.log("Cover:", cover);
-    console.log("HomeContent:", homeContent);
-
-    // If already entered
     if (cover && homeContent && sessionStorage.getItem("entered")) {
         cover.classList.add("hide");
         homeContent.classList.add("show");
     }
 
-    // On click
     if (startBtn && cover && homeContent) {
         startBtn.addEventListener("click", () => {
-            console.log("✅ Start button clicked");
             sessionStorage.setItem("entered", "true");
             cover.classList.add("hide");
             homeContent.classList.add("show");
         });
     }
-
 
     /* =========================
        TABLE OF CONTENTS
@@ -65,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tocButtons = document.querySelectorAll(".toc-btn");
 
     if (tocBtn && tocContent) {
-
         tocBtn.addEventListener("click", (e) => {
             e.stopPropagation();
             tocContent.style.display =
@@ -94,14 +85,66 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =========================
+        NOTIFICATIONS – FIREBASE
+    ========================= */
+
+    const notifyBtn = document.querySelector(".notify-btn");
+
+    if (notifyBtn) {
+        notifyBtn.addEventListener("click", async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                console.log("Notification permission:", permission);
+
+                if (permission !== "granted") {
+                    console.log("❌ Notifications denied");
+                    return;
+                }
+
+                console.log("✅ Notifications allowed");
+
+                // 🔥 Get Firebase messaging instance
+                const messaging = firebase.messaging();
+
+                // 🔑 Get FCM token
+                const token = await messaging.getToken({
+                    vapidKey: "YOUR_PUBLIC_VAPID_KEY"
+                });
+
+                if (!token) {
+                    console.error("❌ No FCM token received");
+                    return;
+                }
+
+                console.log("✅ FCM token:", token);
+
+                // 📡 Send token to Cloudflare Worker
+                await fetch("https://YOUR-WORKER.workers.dev/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        token,
+                        language: "it"
+                    })
+                });
+
+                console.log("📨 Token sent to backend");
+
+            } catch (err) {
+                console.error("❌ Notification setup failed", err);
+            }
+        });
+    }
+
+    /* =========================
        FIREBASE SERVICE WORKER
     ========================== */
 
-    // ✅ THIS is the only SW you should register
+    // ✅ Only SW you should register
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/firebase-messaging-sw.js")
             .then(() => console.log("🔥 Firebase SW registered"))
-            .catch(err => console.error("SW failed", err));
+            .catch(err => console.error("❌ SW failed", err));
     }
 
 });
