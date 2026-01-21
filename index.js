@@ -27,6 +27,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =========================
+       COVER / START BUTTON
+    ========================= */
+
+    const startBtn = document.getElementById("startBtn");
+    const cover = document.getElementById("cover");
+    const homeContent = document.getElementById("homeContent");
+
+    console.log("StartBtn:", startBtn);
+    console.log("Cover:", cover);
+    console.log("HomeContent:", homeContent);
+
+    // If already entered
+    if (cover && homeContent && sessionStorage.getItem("entered")) {
+        cover.classList.add("hide");
+        homeContent.classList.add("show");
+    }
+
+    // On click
+    if (startBtn && cover && homeContent) {
+        startBtn.addEventListener("click", () => {
+            console.log("✅ Start button clicked");
+            sessionStorage.setItem("entered", "true");
+            cover.classList.add("hide");
+            homeContent.classList.add("show");
+        });
+    }
+
+
+    /* =========================
        TABLE OF CONTENTS
     ========================== */
 
