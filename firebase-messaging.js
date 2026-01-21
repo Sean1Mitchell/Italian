@@ -13,29 +13,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
+// 🔥 Register SW FIRST
+let swRegistration = null;
+
+if ("serviceWorker" in navigator) {
+    swRegistration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    console.log("🔥 Firebase SW registered (authoritative)");
+}
+
 const notifyBtn = document.querySelector(".notify-btn");
 
-if (notifyBtn && "serviceWorker" in navigator) {
+if (notifyBtn) {
     notifyBtn.addEventListener("click", async () => {
         try {
             const permission = await Notification.requestPermission();
             if (permission !== "granted") return;
 
-            // 🔥 Get the existing SW registration
-            const registration = await navigator.serviceWorker.ready;
-
             const token = await getToken(messaging, {
                 vapidKey: "BJJ-D77WksAq52maFOkRJLmj75KeICqOaRkjnpTHoUuMJaLKW7f4f8NL7bzKCA2Iaf325PERQ-gHFgTMhx03Pm4",
-                serviceWorkerRegistration: registration
+                serviceWorkerRegistration: swRegistration
             });
 
             console.log("✅ Firebase token:", token);
 
-            await fetch("https://push-worker.seanmitchell09022000.workers.dev/fcm-subscribe", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, language: "it" })
-            });
+            await fetch(
+                "https://push-worker.seanmitchell09022000.workers.dev/fcm-subscribe",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token, language: "it" })
+                }
+            );
 
             console.log("📨 Token sent to backend");
 

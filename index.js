@@ -110,16 +110,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
-    /* =========================
-       FIREBASE SERVICE WORKER
-    ========================== */
-
-    // ✅ Only SW you should register
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/firebase-messaging-sw.js")
-            .then(() => console.log("🔥 Firebase SW registered"))
-            .catch(err => console.error("❌ SW failed", err));
-    }
-
 });
