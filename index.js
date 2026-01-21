@@ -85,8 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =========================
-        NOTIFICATIONS – FIREBASE
-    ========================= */
+      NOTIFICATIONS – PERMISSION ONLY
+   ========================= */
 
     const notifyBtn = document.querySelector(".notify-btn");
 
@@ -96,45 +96,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 const permission = await Notification.requestPermission();
                 console.log("Notification permission:", permission);
 
-                if (permission !== "granted") {
+                if (permission === "granted") {
+                    console.log("✅ Notifications allowed");
+                    // Firebase token + backend logic is handled
+                    // inside firebase-messaging.js
+                } else {
                     console.log("❌ Notifications denied");
-                    return;
                 }
-
-                console.log("✅ Notifications allowed");
-
-                // 🔥 Get Firebase messaging instance
-                const messaging = firebase.messaging();
-
-                // 🔑 Get FCM token
-                const token = await messaging.getToken({
-                    vapidKey: "YOUR_PUBLIC_VAPID_KEY"
-                });
-
-                if (!token) {
-                    console.error("❌ No FCM token received");
-                    return;
-                }
-
-                console.log("✅ FCM token:", token);
-
-                // 📡 Send token to Cloudflare Worker
-                await fetch("https://YOUR-WORKER.workers.dev/subscribe", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        token,
-                        language: "it"
-                    })
-                });
-
-                console.log("📨 Token sent to backend");
 
             } catch (err) {
-                console.error("❌ Notification setup failed", err);
+                console.error("❌ Notification permission failed", err);
             }
         });
     }
+
 
     /* =========================
        FIREBASE SERVICE WORKER
