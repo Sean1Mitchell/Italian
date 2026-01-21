@@ -13,33 +13,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-const notifyBtn = document.getElementById("notifyBtn");
+const notifyBtn = document.querySelector(".notify-btn");
 
-if (notifyBtn && "Notification" in window) {
+if (notifyBtn && "serviceWorker" in navigator) {
     notifyBtn.addEventListener("click", async () => {
         try {
             const permission = await Notification.requestPermission();
             if (permission !== "granted") return;
 
-            const token = await getToken(messaging, {
-                vapidKey: "BJJ-D77WksAq52maFOkRJLmj75KeICqOaRkjnpTHoUuMJaLKW7f4f8NL7bzKCA2Iaf325PERQ-gHFgTMhx03Pm4"
-            });
+            // 🔥 Get the existing SW registration
+            const registration = await navigator.serviceWorker.ready;
 
-            if (!token) {
-                console.error("❌ No FCM token received");
-                return;
-            }
+            const token = await getToken(messaging, {
+                vapidKey: "BJJ-D77WksAq52maFOkRJLmj75KeICqOaRkjnpTHoUuMJaLKW7f4f8NL7bzKCA2Iaf325PERQ-gHFgTMhx03Pm4",
+                serviceWorkerRegistration: registration
+            });
 
             console.log("✅ Firebase token:", token);
 
-            // 📡 SEND TOKEN TO CLOUDFLARE WORKER
-            await fetch("https://push-worker.seanmitchell09022000.workers.dev/subscribe", {
+            await fetch("https://push-worker.seanmitchell09022000.workers.dev/fcm-subscribe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    token,
-                    language: "it"
-                })
+                body: JSON.stringify({ token, language: "it" })
             });
 
             console.log("📨 Token sent to backend");
@@ -48,7 +43,7 @@ if (notifyBtn && "Notification" in window) {
             notifyBtn.disabled = true;
 
         } catch (err) {
-            console.error("❌ Firebase push setup failed:", err);
+            console.error("❌ Firebase push failed:", err);
         }
     });
 }
