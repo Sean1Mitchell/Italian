@@ -12,10 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
         hamburger.addEventListener("click", () => {
             sidebar.classList.toggle("active");
             body.classList.toggle("sidebar-open");
-
-            if (!sidebar.classList.contains("active")) {
-                closeAllDropdowns?.();
-            }
         });
 
         document.addEventListener("click", (e) => {
@@ -27,121 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 sidebar.classList.remove("active");
                 body.classList.remove("sidebar-open");
             }
-        });
-    }
-
-
-    /* =========================
-        PUSH NOTIFICATIONS 
-    ========================= */
-
-const notifyBtn = document.getElementById("notifyBtn");
-
-// 🔑 Your PUBLIC VAPID key (base64url, no padding)
-const VAPID_PUBLIC_KEY =
-  "BKU68fW6FWchauFoH4H_chsBFw8Du_tiMXbsF5mQmT_hvJ3DFX6cfAVFvBiorqfCVxu-A4E0mkAc19BZ6P0Lbrk";
-
-/**
- * Convert base64url string to Uint8Array (REQUIRED by Push API)
- */
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-
-  return outputArray;
-}
-
-if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
-
-  const updateButtonState = () => {
-    if (Notification.permission === "granted") {
-      notifyBtn.textContent = "🔔 Notifications enabled";
-      notifyBtn.disabled = true;
-    }
-
-    if (Notification.permission === "denied") {
-      notifyBtn.textContent = "🔕 Notifications blocked";
-      notifyBtn.disabled = true;
-    }
-  };
-
-  updateButtonState();
-
-  notifyBtn.addEventListener("click", async () => {
-    try {
-      // 1️⃣ Request permission
-      const permission = await Notification.requestPermission();
-
-      if (permission !== "granted") {
-        updateButtonState();
-        return;
-      }
-
-      // 2️⃣ Get service worker
-      const registration = await navigator.serviceWorker.ready;
-
-      // 3️⃣ Get existing subscription OR create a new one
-      let subscription = await registration.pushManager.getSubscription();
-
-      if (!subscription) {
-        subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-        });
-      }
-
-      // 4️⃣ Send subscription to Cloudflare Worker
-      await fetch(
-        "https://push-worker.seanmitchell09022000.workers.dev/subscribe",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(subscription)
-        }
-      );
-
-      // 5️⃣ Update UI
-      notifyBtn.textContent = "🔔 Notifications enabled";
-      notifyBtn.disabled = true;
-
-      console.log("✅ Push subscription saved");
-
-    } catch (err) {
-      console.error("❌ Push setup failed:", err);
-    }
-  });
-}
-
-
-
-
-    /* =========================
-       INDEX PAGE COVER
-    ========================== */
-
-    const startBtn = document.getElementById("startBtn");
-    const cover = document.getElementById("cover");
-    const homeContent = document.getElementById("homeContent");
-
-    if (cover && homeContent && sessionStorage.getItem("entered")) {
-        cover.classList.add("hide");
-        homeContent.classList.add("show");
-    }
-
-    if (startBtn && cover && homeContent) {
-        startBtn.addEventListener("click", () => {
-            sessionStorage.setItem("entered", "true");
-            cover.classList.add("hide");
-            homeContent.classList.add("show");
         });
     }
 
@@ -176,36 +57,22 @@ if ("Notification" in window && "serviceWorker" in navigator && notifyBtn) {
         });
 
         document.addEventListener("click", (e) => {
-            if (
-                !tocContent.contains(e.target) &&
-                !tocBtn.contains(e.target)
-            ) {
+            if (!tocContent.contains(e.target) && !tocBtn.contains(e.target)) {
                 tocContent.style.display = "none";
                 tocDropdowns.forEach((d) => d.classList.remove("show"));
             }
         });
-
-        tocDropdowns.forEach((dropdown) => {
-            dropdown.querySelectorAll("a").forEach((link) => {
-                link.addEventListener("click", () => {
-                    tocContent.style.display = "none";
-                    tocDropdowns.forEach((d) => d.classList.remove("show"));
-                });
-            });
-        });
     }
-
 
     /* =========================
-       SERVICE WORKER JS
+       FIREBASE SERVICE WORKER
     ========================== */
 
-
+    // ✅ THIS is the only SW you should register
     if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js")
-            .then(() => console.log("Service Worker registered"))
+        navigator.serviceWorker.register("/firebase-messaging-sw.js")
+            .then(() => console.log("🔥 Firebase SW registered"))
             .catch(err => console.error("SW failed", err));
     }
-
 
 });
